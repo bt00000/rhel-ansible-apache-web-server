@@ -1,0 +1,29 @@
+- name: Setup Apache Web Server on RHEL
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Ensure Apache is installed
+      dnf:
+        name: httpd
+        state: present
+
+    - name: Start and enable Apache
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Allow HTTP traffic in firewall
+      firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+      notify: Restart Apache
+
+  handlers:
+    - name: Restart Apache
+      service:
+        name: httpd
+        state: restarted
+
+
